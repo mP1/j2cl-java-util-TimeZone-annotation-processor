@@ -14,11 +14,12 @@ after building with [j2cl-maven-plugin](https://travis-ci.com/mP1/j2cl-maven-plu
 
 To select which locales are included set the `walkingkooka.j2cl.java.util.Locale` annotation processor argument.
 
-```xml
+```text
 -Awalkingkooka.j2cl.java.util.Locale=EN*
+-Awalkingkooka.j2cl.java.util.TimeZone=Australia*
 ```
 
-This selects all locales starting with `EN`.
+This selects all locales starting with `EN` and Australian timezones.
 
 For more details [click here](https://github.com/mP1/j2cl-locale)
 
