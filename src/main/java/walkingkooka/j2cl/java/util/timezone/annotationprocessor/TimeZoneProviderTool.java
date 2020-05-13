@@ -30,6 +30,7 @@ import walkingkooka.text.printer.Printers;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutput;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.Locale;
@@ -172,34 +173,14 @@ public final class TimeZoneProviderTool {
     }
 
     private void generateZoneId(final String zoneId) throws Exception {
-        final Set<Locale> locales = this.locales;
         final DataOutput data = this.data;
         final IndentingPrinter comments = this.comments;
 
-        // timeZoneId
-        comments.lineStart();
-        comments.print(zoneId);
-        data.writeUTF(zoneId);
-
+        this.generateTimeZoneId(zoneId);
         final TimeZone timeZone = TimeZone.getTimeZone(zoneId);
+        this.generateRawOffset(timeZone);
 
-        // rawOffset
-        final int rawOffset = timeZone.getRawOffset();
-        comments.lineStart();
-        comments.print("rawOffset: " + rawOffset);
-        data.writeInt(rawOffset);
-
-        final Map<TimeZoneDisplay, Set<Locale>> displayToLocales = Maps.sorted();
-
-        for (final Locale locale : locales) {
-            final TimeZoneDisplay display = display(zoneId, locale);
-            Set<Locale> displayLocales = displayToLocales.get(display);
-            if (null == displayLocales) {
-                displayLocales = localeSet();
-                displayToLocales.put(display, displayLocales);
-            }
-            displayLocales.add(locale);
-        }
+        final Map<TimeZoneDisplay, Set<Locale>> displayToLocales = populateDisplayToLocales(zoneId);
 
         // find the most popular display
         int mostDisplayLocaleCounts = -1;
@@ -225,16 +206,21 @@ public final class TimeZoneProviderTool {
                     display);
         }
 
-        localesStringToDisplay.forEach((l, d) -> {
-            comments.lineStart();
-            comments.print(l + "=" + d);
-        });
+        this.generateCommentLocalesToDisplay(localesStringToDisplay);
 
         // the display with the most locales will be removed.
         displayToLocales.remove(mostDisplay);
 
         // write the display text for the most popular locales
         mostDisplay.write(data);
+        this.generateDisplayToLocales(displayToLocales);
+
+        comments.lineStart();
+        comments.print(comments.lineEnding());
+    }
+
+    private void generateDisplayToLocales(final Map<TimeZoneDisplay, Set<Locale>> displayToLocales) throws IOException {
+        final DataOutput data = this.data;
 
         // write all other display and locales
         data.writeInt(displayToLocales.size());
@@ -247,9 +233,44 @@ public final class TimeZoneProviderTool {
                 data.writeUTF(locale.toLanguageTag());
             }
         }
+    }
 
-        comments.lineStart();
-        comments.print(comments.lineEnding());
+    private void generateTimeZoneId(final String zoneId) throws IOException {
+        this.comments.lineStart();
+        this.comments.print(zoneId);
+        this.data.writeUTF(zoneId);
+    }
+
+    private void generateRawOffset(final TimeZone timeZone) throws IOException {
+        final int rawOffset = timeZone.getRawOffset();
+        this.comments.lineStart();
+        this.comments.print("rawOffset: " + rawOffset);
+        this.data.writeInt(rawOffset);
+    }
+
+    private void generateCommentLocalesToDisplay(final Map<String, TimeZoneDisplay> localesStringToDisplay) {
+        final IndentingPrinter comments = this.comments;
+
+        localesStringToDisplay.forEach((l, d) -> {
+            comments.lineStart();
+            comments.print(l + "=" + d);
+        });
+    }
+
+    private Map<TimeZoneDisplay, Set<Locale>> populateDisplayToLocales(final String zoneId) {
+        final Map<TimeZoneDisplay, Set<Locale>> displayToLocales = Maps.sorted();
+
+        for (final Locale locale : this.locales) {
+            final TimeZoneDisplay display = display(zoneId, locale);
+            Set<Locale> displayLocales = displayToLocales.get(display);
+            if (null == displayLocales) {
+                displayLocales = localeSet();
+                displayToLocales.put(display, displayLocales);
+            }
+            displayLocales.add(locale);
+        }
+
+        return displayToLocales;
     }
 
     private static TimeZoneDisplay display(final String zoneId,
