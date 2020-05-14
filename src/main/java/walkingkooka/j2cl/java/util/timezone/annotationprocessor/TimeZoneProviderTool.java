@@ -194,8 +194,7 @@ public final class TimeZoneProviderTool {
         // the display with the most locales will be removed.
         displayToLocales.remove(mostDisplay);
 
-        // write the display text for the most popular locales
-        mostDisplay.write(data);
+        generateDisplay(mostDisplay, "default ");
         this.generateDisplayToLocales(displayToLocales);
 
         comments.lineStart();
@@ -215,10 +214,28 @@ public final class TimeZoneProviderTool {
                     comments);
             comments.indent();
             {
-                displayAndLocales.getKey().write(data);
+                generateDisplay(displayAndLocales.getKey(), "");
             }
             comments.outdent();
         }
+    }
+
+    private void generateDisplay(final TimeZoneDisplay display, final String prefix) throws IOException {
+        final IndentingPrinter comments = this.comments;
+
+        comments.lineStart();
+        comments.print(prefix + "shortDisplayName: " + display.shortDisplayName);
+
+        comments.lineStart();
+        comments.print(prefix + "shortDisplayNameDaylight: " + display.shortDisplayNameDaylight);
+
+        comments.lineStart();
+        comments.print(prefix + "longDisplayName: " + display.longDisplayName);
+
+        comments.lineStart();
+        comments.print(prefix + "longDisplayNameDaylight " + display.longDisplayNameDaylight);
+
+        display.write(this.data);
     }
 
     private void generateTimeZoneId(final String zoneId) throws IOException {
