@@ -159,9 +159,11 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
             mostLocales.addAll(selectedLocales);
 
             for (int j = 0; j < displayToLocalesCount; j++) {
+                final Set<Locale> locales = readAndCheckLocales(data, (localeCount) -> "locale count " + localeCount + " < 0 for timeZoneId: " + CharSequences.quoteAndEscape(timeZoneId) + " data: " + data.toString().substring(0, 50));
+
                 final TimeZoneDisplay display = TimeZoneDisplay.read(data);
 
-                for (final Locale locale : readAndCheckLocales(data, (localeCount) -> "locale count " + localeCount + " < 0 for timeZoneId: " + CharSequences.quoteAndEscape(timeZoneId) + " display: " + display + " data: " + data.toString().substring(0, 50))) {
+                for (final Locale locale : locales) {
                     checkDisplayName(timeZone, false, TimeZone.SHORT, locale, display.shortDisplayName);
                     checkDisplayName(timeZone, true, TimeZone.SHORT, locale, display.shortDisplayNameDaylight);
                     checkDisplayName(timeZone, false, TimeZone.LONG, locale, display.longDisplayName);

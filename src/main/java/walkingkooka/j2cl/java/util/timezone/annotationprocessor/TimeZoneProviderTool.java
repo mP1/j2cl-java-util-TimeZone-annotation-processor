@@ -75,16 +75,15 @@ import java.util.zip.GZIPOutputStream;
  *     int display to locales count
  *
  *     for each display to locales
+ *         int locale count
+ *         for each locale
+ *             String locale language tag
+ *         end
  *
  *         String shortDisplayText
  *         String shortDisplayTextDaylight
  *         String longDisplayText
  *         String longDisplayTextDaylight
- *
- *         int locale count
- *         for each locale
- *             String locale language tag
- *         end
  *     end
  * </pre>
  */
@@ -213,16 +212,20 @@ public final class TimeZoneProviderTool {
 
     private void generateDisplayToLocales(final Map<TimeZoneDisplay, Set<Locale>> displayToLocales) throws IOException {
         final DataOutput data = this.data;
+        final IndentingPrinter comments = this.comments;
 
         // write all other display and locales
         data.writeInt(displayToLocales.size());
         for (final Entry<TimeZoneDisplay, Set<Locale>> displayAndLocales : displayToLocales.entrySet()) {
-            displayAndLocales.getKey().write(data);
-
             LocaleAwareAnnotationProcessorTool.generateLocales(displayAndLocales.getValue(),
                     data,
                     "locales",
-                    this.comments);
+                    comments);
+            comments.indent();
+            {
+                displayAndLocales.getKey().write(data);
+            }
+            comments.outdent();
         }
     }
 
