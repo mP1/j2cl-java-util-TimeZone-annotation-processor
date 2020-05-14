@@ -23,6 +23,7 @@ import walkingkooka.j2cl.java.io.string.StringDataInputDataOutput;
 import walkingkooka.j2cl.locale.TimeZoneDisplay;
 import walkingkooka.j2cl.locale.WalkingkookaLanguageTag;
 import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessor;
+import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessorTool;
 import walkingkooka.text.LineEnding;
 import walkingkooka.text.printer.IndentingPrinter;
 import walkingkooka.text.printer.Printer;
@@ -38,6 +39,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPOutputStream;
@@ -258,28 +260,18 @@ public final class TimeZoneProviderTool {
     }
 
     private Map<TimeZoneDisplay, Set<Locale>> populateDisplayToLocales(final String zoneId) {
-        final Map<TimeZoneDisplay, Set<Locale>> displayToLocales = Maps.sorted();
-
-        for (final Locale locale : this.locales) {
-            final TimeZoneDisplay display = display(zoneId, locale);
-            Set<Locale> displayLocales = displayToLocales.get(display);
-            if (null == displayLocales) {
-                displayLocales = localeSet();
-                displayToLocales.put(display, displayLocales);
-            }
-            displayLocales.add(locale);
-        }
-
-        return displayToLocales;
+        return LocaleAwareAnnotationProcessorTool.buildMultiLocaleMap(this.timeZoneDisplay(zoneId),
+                this.locales);
     }
 
-    private static TimeZoneDisplay display(final String zoneId,
-                                           final Locale locale) {
-        final TimeZone timeZone = TimeZone.getTimeZone(zoneId);
-        return TimeZoneDisplay.with(timeZone.getDisplayName(false, TimeZone.SHORT, locale),
-                timeZone.getDisplayName(true, TimeZone.SHORT, locale),
-                timeZone.getDisplayName(false, TimeZone.LONG, locale),
-                timeZone.getDisplayName(true, TimeZone.LONG, locale));
+    private Function<Locale, TimeZoneDisplay> timeZoneDisplay(final String zoneId) {
+        return locale -> {
+            final TimeZone timeZone = TimeZone.getTimeZone(zoneId);
+            return TimeZoneDisplay.with(timeZone.getDisplayName(false, TimeZone.SHORT, locale),
+                    timeZone.getDisplayName(true, TimeZone.SHORT, locale),
+                    timeZone.getDisplayName(false, TimeZone.LONG, locale),
+                    timeZone.getDisplayName(true, TimeZone.LONG, locale));
+        };
     }
 
     private final Set<Locale> locales;
