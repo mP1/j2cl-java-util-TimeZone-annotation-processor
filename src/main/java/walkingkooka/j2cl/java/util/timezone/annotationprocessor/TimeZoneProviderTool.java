@@ -184,31 +184,9 @@ public final class TimeZoneProviderTool {
 
         final Map<TimeZoneDisplay, Set<Locale>> displayToLocales = populateDisplayToLocales(zoneId);
 
-        // find the most popular display
-        int mostDisplayLocaleCounts = -1;
-        TimeZoneDisplay mostDisplay = null;
+        final TimeZoneDisplay mostDisplay = LocaleAwareAnnotationProcessorTool.findMostPopularLocaleKey(displayToLocales);
 
-        final Map<String, TimeZoneDisplay> localesStringToDisplay = Maps.sorted(); // sorts locales to display alphabetically for comments
-
-        for (final Entry<TimeZoneDisplay, Set<Locale>> displayAndLocales : displayToLocales.entrySet()) {
-            final TimeZoneDisplay display = displayAndLocales.getKey();
-            final Set<Locale> displayLocales = displayAndLocales.getValue();
-            final int count = displayLocales.size();
-
-            if (count > mostDisplayLocaleCounts) {
-                if (count > mostDisplayLocaleCounts) {
-                    mostDisplayLocaleCounts = count;
-                    mostDisplay = display;
-                }
-            }
-
-            localesStringToDisplay.put(displayLocales.stream()
-                            .map(Locale::toLanguageTag)
-                            .collect(Collectors.joining(", ")),
-                    display);
-        }
-
-        this.generateCommentLocalesToDisplay(localesStringToDisplay);
+        this.generateCommentLocalesToDisplay(displayToLocales);
 
         // the display with the most locales will be removed.
         displayToLocales.remove(mostDisplay);
@@ -250,7 +228,17 @@ public final class TimeZoneProviderTool {
         this.data.writeInt(rawOffset);
     }
 
-    private void generateCommentLocalesToDisplay(final Map<String, TimeZoneDisplay> localesStringToDisplay) {
+    private void generateCommentLocalesToDisplay(final Map<TimeZoneDisplay, Set<Locale>> displayToLocales) {
+        final Map<String, TimeZoneDisplay> localesStringToDisplay = Maps.sorted(); // sorts locales to display alphabetically for comments
+        for (final Entry<TimeZoneDisplay, Set<Locale>> displayAndLocales : displayToLocales.entrySet()) {
+            final TimeZoneDisplay display = displayAndLocales.getKey();
+            final Set<Locale> displayLocales = displayAndLocales.getValue();
+            localesStringToDisplay.put(displayLocales.stream()
+                            .map(Locale::toLanguageTag)
+                            .collect(Collectors.joining(", ")),
+                    display);
+        }
+
         final IndentingPrinter comments = this.comments;
 
         localesStringToDisplay.forEach((l, d) -> {
