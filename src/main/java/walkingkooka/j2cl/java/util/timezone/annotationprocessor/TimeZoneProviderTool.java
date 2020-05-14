@@ -207,11 +207,10 @@ public final class TimeZoneProviderTool {
         for (final Entry<TimeZoneDisplay, Set<Locale>> displayAndLocales : displayToLocales.entrySet()) {
             displayAndLocales.getKey().write(data);
 
-            final Set<Locale> displayLocales = displayAndLocales.getValue();
-            data.writeInt(displayLocales.size());
-            for (final Locale locale : displayLocales) {
-                data.writeUTF(locale.toLanguageTag());
-            }
+            LocaleAwareAnnotationProcessorTool.generateLocales(displayAndLocales.getValue(),
+                    data,
+                    "locales",
+                    this.comments);
         }
     }
 
