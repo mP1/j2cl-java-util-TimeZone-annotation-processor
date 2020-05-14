@@ -34,6 +34,7 @@ import java.io.DataOutput;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -52,6 +53,19 @@ import java.util.zip.GZIPOutputStream;
  * for each timeZoneId
  *     String timeZoneId
  *     int rawOffset
+ *
+ *     int default firstDayOfWeek
+ *     int default minimalDaysInFirstWeek
+ *
+ *     group for each locales with common
+           int locale count
+ *         for each locale
+ *             String locale language tag
+ *         end
+ *
+ *         int firstdayofweek
+ *         int minimaldaysinfirstweek
+ *      end
  *
  *     String default shortDisplayText
  *     String default shortDisplayTextDaylight
@@ -72,7 +86,6 @@ import java.util.zip.GZIPOutputStream;
  *             String locale language tag
  *         end
  *     end
- * end
  * </pre>
  */
 public final class TimeZoneProviderTool {
@@ -149,7 +162,6 @@ public final class TimeZoneProviderTool {
         return left.toLanguageTag().compareTo(right.toLanguageTag());
     }
 
-
     private TimeZoneProviderTool(final Set<Locale> locales,
                                  final Set<String> timezoneIds,
                                  final DataOutput data,
@@ -179,6 +191,8 @@ public final class TimeZoneProviderTool {
         this.generateTimeZoneId(zoneId);
         final TimeZone timeZone = TimeZone.getTimeZone(zoneId);
         this.generateRawOffset(timeZone);
+
+        this.generateGregorianCalendarData(timeZone);
 
         final Map<TimeZoneDisplay, Set<Locale>> displayToLocales = populateDisplayToLocales(zoneId);
 
@@ -223,6 +237,48 @@ public final class TimeZoneProviderTool {
         this.comments.lineStart();
         this.comments.print("rawOffset: " + rawOffset);
         this.data.writeInt(rawOffset);
+    }
+
+    /**
+     * <pre>
+     * for each locale
+     *   int firstdayofweek
+     *   int minimaldaysinfirstweek
+     * </pre>
+     **/
+    private void generateGregorianCalendarData(final TimeZone timeZone) throws IOException {
+        final Map<TimeZoneProviderToolCalendar, Set<Locale>> calendarToLocales = LocaleAwareAnnotationProcessorTool.buildMultiLocaleMap(
+                localeToTimeZoneProviderToolGregorianCalender(timeZone),
+                this.locales);
+
+        final DataOutput data = this.data;
+        final IndentingPrinter comments = this.comments;
+
+        // find most popular and write that as a default.
+        final TimeZoneProviderToolCalendar most = LocaleAwareAnnotationProcessorTool.findMostPopularLocaleKey(calendarToLocales);
+        most.generate(data, "default ", comments);
+
+        calendarToLocales.remove(most);
+
+        // other
+        data.writeInt(calendarToLocales.size());
+        for (final Entry<TimeZoneProviderToolCalendar, Set<Locale>> calendarAndLocales : calendarToLocales.entrySet()) {
+            LocaleAwareAnnotationProcessorTool.generateLocales(calendarAndLocales.getValue(),
+                    data,
+                    "locales",
+                    comments);
+
+            comments.indent();
+            {
+                calendarAndLocales.getKey()
+                        .generate(data, "", comments);
+            }
+            comments.outdent();
+        }
+    }
+
+    private static Function<Locale, TimeZoneProviderToolCalendar> localeToTimeZoneProviderToolGregorianCalender(final TimeZone timeZone) {
+        return locale -> TimeZoneProviderToolCalendar.with((GregorianCalendar) GregorianCalendar.getInstance(timeZone, locale));
     }
 
     private void generateCommentLocalesToDisplay(final Map<TimeZoneDisplay, Set<Locale>> displayToLocales) {
