@@ -153,14 +153,6 @@ public final class TimeZoneProviderTool {
                 .generate0();
     }
 
-    private static Set<Locale> localeSet() {
-        return Sets.sorted(TimeZoneProviderTool::compareLocaleLanguageTag);
-    }
-
-    private static int compareLocaleLanguageTag(final Locale left, final Locale right) {
-        return left.toLanguageTag().compareTo(right.toLanguageTag());
-    }
-
     private TimeZoneProviderTool(final Set<Locale> locales,
                                  final Set<String> timezoneIds,
                                  final DataOutput data,
