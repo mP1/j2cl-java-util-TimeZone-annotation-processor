@@ -18,12 +18,11 @@
 package walkingkooka.j2cl.java.util.timezone.annotationprocessor;
 
 import walkingkooka.collect.set.Sets;
-import walkingkooka.j2cl.locale.WalkingkookaLanguageTag;
 import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessor;
+import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessorTool;
 import walkingkooka.text.printer.IndentingPrinter;
 
 import java.io.DataOutput;
-import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -43,7 +42,7 @@ public final class TimeZoneProviderAnnotationProcessor extends LocaleAwareAnnota
                             final Function<String, String> arguments,
                             final DataOutput data,
                             final IndentingPrinter comments) throws Exception {
-        TimeZoneProviderTool.generate(languageTags,
+        TimeZoneProviderTool.generate(LocaleAwareAnnotationProcessorTool.toLocales(languageTags),
                 TimeZoneProviderTool.timezoneIds(arguments.apply(ZONEIDS_ANNOTATION_PROCESSOR_OPTION)),
                 data,
                 comments);
