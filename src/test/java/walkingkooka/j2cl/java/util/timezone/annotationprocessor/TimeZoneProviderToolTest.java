@@ -58,7 +58,7 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
 
     private void generateReadAndVerify(final String localeFilter,
                                        final String timeZoneIdFilter) throws Exception {
-        final Set<String> selectedLocales = WalkingkookaLanguageTag.all(localeFilter);
+        final Set<Locale> selectedLocales = WalkingkookaLanguageTag.locales(localeFilter);
         final Set<String> timeZoneIds = TimeZoneProviderTool.timezoneIds(timeZoneIdFilter);
 
         assertNotEquals(0, selectedLocales.size(), "no locales");
@@ -113,9 +113,7 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
                     () -> "locale displayToLocalesCount " + displayToLocalesCount + " < 0 for timeZoneId: " + CharSequences.quoteAndEscape(timeZoneId) + " data: " + data.toString().substring(0, 50));
 
             final Set<Locale> mostLocales = Sets.ordered();
-            selectedLocales.stream()
-                    .map(Locale::forLanguageTag)
-                    .forEach(mostLocales::add);
+            mostLocales.addAll(selectedLocales);
 
             for (int j = 0; j < displayToLocalesCount; j++) {
                 final TimeZoneDisplay display = TimeZoneDisplay.read(data);

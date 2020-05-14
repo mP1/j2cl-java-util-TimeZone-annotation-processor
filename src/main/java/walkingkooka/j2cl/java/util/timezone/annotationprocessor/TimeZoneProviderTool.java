@@ -130,13 +130,11 @@ public final class TimeZoneProviderTool {
                 .collect(Collectors.toCollection(Sets::sorted));
     }
 
-    static void generate(final Set<String> languageTags,
+    static void generate(final Set<Locale> locales,
                          final Set<String> timezoneIds,
                          final DataOutput data,
                          final IndentingPrinter comments) throws Exception {
-        new TimeZoneProviderTool(languageTags.stream()
-                .map(Locale::forLanguageTag)
-                .collect(Collectors.toCollection(TimeZoneProviderTool::localeSet)),
+        new TimeZoneProviderTool(locales,
                 timezoneIds,
                 data,
                 comments)
