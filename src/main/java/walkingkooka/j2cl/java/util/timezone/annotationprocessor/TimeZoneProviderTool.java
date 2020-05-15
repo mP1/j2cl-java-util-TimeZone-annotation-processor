@@ -20,6 +20,7 @@ package walkingkooka.j2cl.java.util.timezone.annotationprocessor;
 import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.j2cl.java.io.string.StringDataInputDataOutput;
+import walkingkooka.j2cl.locale.TimeZoneCalendar;
 import walkingkooka.j2cl.locale.TimeZoneDisplay;
 import walkingkooka.j2cl.locale.WalkingkookaLanguageTag;
 import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessor;
@@ -259,7 +260,7 @@ public final class TimeZoneProviderTool {
      * </pre>
      **/
     private void generateGregorianCalendarData(final TimeZone timeZone) throws IOException {
-        final Map<TimeZoneProviderToolCalendar, Set<Locale>> calendarToLocales = LocaleAwareAnnotationProcessorTool.buildMultiLocaleMap(
+        final Map<TimeZoneCalendar, Set<Locale>> calendarToLocales = LocaleAwareAnnotationProcessorTool.buildMultiLocaleMap(
                 localeToTimeZoneProviderToolGregorianCalender(timeZone),
                 this.locales);
 
@@ -267,14 +268,14 @@ public final class TimeZoneProviderTool {
         final IndentingPrinter comments = this.comments;
 
         // find most popular and write that as a default.
-        final TimeZoneProviderToolCalendar most = LocaleAwareAnnotationProcessorTool.findMostPopularLocaleKey(calendarToLocales);
+        final TimeZoneCalendar most = LocaleAwareAnnotationProcessorTool.findMostPopularLocaleKey(calendarToLocales);
         most.generate(data, "default ", comments);
 
         calendarToLocales.remove(most);
 
         // other
         data.writeInt(calendarToLocales.size());
-        for (final Entry<TimeZoneProviderToolCalendar, Set<Locale>> calendarAndLocales : calendarToLocales.entrySet()) {
+        for (final Entry<TimeZoneCalendar, Set<Locale>> calendarAndLocales : calendarToLocales.entrySet()) {
             LocaleAwareAnnotationProcessorTool.generateLocales(calendarAndLocales.getValue(),
                     data,
                     "locales",
@@ -289,8 +290,8 @@ public final class TimeZoneProviderTool {
         }
     }
 
-    private static Function<Locale, TimeZoneProviderToolCalendar> localeToTimeZoneProviderToolGregorianCalender(final TimeZone timeZone) {
-        return locale -> TimeZoneProviderToolCalendar.with((GregorianCalendar) GregorianCalendar.getInstance(timeZone, locale));
+    private static Function<Locale, TimeZoneCalendar> localeToTimeZoneProviderToolGregorianCalender(final TimeZone timeZone) {
+        return locale -> TimeZoneCalendar.with((GregorianCalendar) GregorianCalendar.getInstance(timeZone, locale));
     }
 
     private void generateCommentLocalesToDisplay(final Map<TimeZoneDisplay, Set<Locale>> displayToLocales) {
