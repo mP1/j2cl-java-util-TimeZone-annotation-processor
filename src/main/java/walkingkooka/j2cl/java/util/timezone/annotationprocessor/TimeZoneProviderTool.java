@@ -178,7 +178,6 @@ public final class TimeZoneProviderTool {
     }
 
     private void generateZoneId(final String zoneId) throws Exception {
-        final DataOutput data = this.data;
         final IndentingPrinter comments = this.comments;
 
         this.generateTimeZoneId(zoneId);
@@ -295,7 +294,7 @@ public final class TimeZoneProviderTool {
     }
 
     private static Function<Locale, TimeZoneCalendar> localeToTimeZoneProviderToolGregorianCalender(final TimeZone timeZone) {
-        return locale -> TimeZoneCalendar.with((GregorianCalendar) GregorianCalendar.getInstance(timeZone, locale));
+        return locale -> TimeZoneCalendar.with(GregorianCalendar.getInstance(timeZone, locale));
     }
 
     private void generateCommentLocalesToDisplay(final Map<TimeZoneDisplay, Set<Locale>> displayToLocales) {
