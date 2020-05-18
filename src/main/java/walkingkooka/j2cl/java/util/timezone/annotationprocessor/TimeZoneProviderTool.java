@@ -22,6 +22,7 @@ import walkingkooka.collect.set.Sets;
 import walkingkooka.j2cl.java.io.string.StringDataInputDataOutput;
 import walkingkooka.j2cl.locale.TimeZoneCalendar;
 import walkingkooka.j2cl.locale.TimeZoneDisplay;
+import walkingkooka.j2cl.locale.TimeZoneOffsetProvider;
 import walkingkooka.j2cl.locale.WalkingkookaLanguageTag;
 import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessor;
 import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessorTool;
@@ -266,6 +267,9 @@ public final class TimeZoneProviderTool {
 
         final DataOutput data = this.data;
         final IndentingPrinter comments = this.comments;
+
+        TimeZoneOffsetProvider.collect(timeZone)
+                .generate(data, comments);
 
         // find most popular and write that as a default.
         final TimeZoneCalendar most = LocaleAwareAnnotationProcessorTool.findMostPopularLocaleKey(calendarToLocales);
