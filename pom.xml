@@ -80,7 +80,7 @@
     <dependencies>
         <dependency>
             <groupId>walkingkooka</groupId>
-            <artifactId>j2cl-locale</artifactId>
+            <artifactId>j2cl-java-util-Locale</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>

@@ -20,6 +20,7 @@ package walkingkooka.j2cl.java.util.timezone.annotationprocessor;
 import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.j2cl.java.io.string.StringDataInputDataOutput;
+import walkingkooka.j2cl.java.util.locale.support.LocaleSupport;
 import walkingkooka.j2cl.locale.TimeZoneCalendar;
 import walkingkooka.j2cl.locale.TimeZoneDisplay;
 import walkingkooka.j2cl.locale.TimeZoneOffsetProvider;
@@ -209,9 +210,8 @@ public final class TimeZoneProviderTool {
         // write all other display and locales
         data.writeInt(displayToLocales.size());
         for (final Entry<TimeZoneDisplay, Set<Locale>> displayAndLocales : displayToLocales.entrySet()) {
-            LocaleAwareAnnotationProcessorTool.generateLocales(displayAndLocales.getValue(),
+            LocaleSupport.generateLocales(displayAndLocales.getValue(),
                     data,
-                    "locales",
                     comments);
             comments.indent();
             {
@@ -279,9 +279,8 @@ public final class TimeZoneProviderTool {
         // other
         data.writeInt(calendarToLocales.size());
         for (final Entry<TimeZoneCalendar, Set<Locale>> calendarAndLocales : calendarToLocales.entrySet()) {
-            LocaleAwareAnnotationProcessorTool.generateLocales(calendarAndLocales.getValue(),
+            LocaleSupport.generateLocales(calendarAndLocales.getValue(),
                     data,
-                    "locales",
                     comments);
 
             comments.indent();
