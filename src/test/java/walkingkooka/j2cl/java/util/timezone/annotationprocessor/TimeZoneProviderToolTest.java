@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.j2cl.java.io.string.StringDataInputDataOutput;
 import walkingkooka.j2cl.locale.TimeZoneDisplay;
+import walkingkooka.j2cl.locale.TimeZoneOffsetProvider;
 import walkingkooka.j2cl.locale.WalkingkookaLanguageTag;
 import walkingkooka.reflect.ClassTesting;
 import walkingkooka.reflect.JavaVisibility;
@@ -105,9 +106,13 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
                     () -> "timezoneId " + CharSequences.quoteAndEscape(timeZoneId) + " data: " + data.toString().substring(0, 50));
 
             // getRawOffset.............................................................................................
+            final int rawOffset = data.readInt();
             assertEquals(timeZone.getRawOffset(),
-                    data.readInt(),
+                    rawOffset,
                     () -> "rawOffset for timeZoneId " + CharSequences.quoteAndEscape(timeZoneId) + " data: " + data.toString().substring(0, 50));
+
+            // timeZoneOffset.............................................................................................
+            final TimeZoneOffsetProvider offsets = TimeZoneOffsetProvider.read(rawOffset, data);
 
             // firstDayOfWeek, minimalDaysInFirstWeek -> locales........................................................
             final Set<Locale> localesWithDefault = Sets.ordered();
