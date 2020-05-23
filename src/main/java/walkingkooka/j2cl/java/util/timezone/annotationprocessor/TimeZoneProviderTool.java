@@ -23,10 +23,10 @@ import walkingkooka.j2cl.java.io.string.StringDataInputDataOutput;
 import walkingkooka.j2cl.java.util.locale.support.LocaleSupport;
 import walkingkooka.j2cl.locale.TimeZoneCalendar;
 import walkingkooka.j2cl.locale.TimeZoneDisplay;
-import walkingkooka.j2cl.locale.TimeZoneOffsetProvider;
 import walkingkooka.j2cl.locale.WalkingkookaLanguageTag;
 import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessor;
 import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessorTool;
+import walkingkooka.j2cl.locale.org.threeten.bp.zone.ZoneRules;
 import walkingkooka.text.LineEnding;
 import walkingkooka.text.printer.IndentingPrinter;
 import walkingkooka.text.printer.Printer;
@@ -56,6 +56,8 @@ import java.util.zip.GZIPOutputStream;
  * for each timeZoneId
  *     String timeZoneId
  *     int rawOffset
+ *
+ *     walkingkooka.j2cl.locale.org.threeten.bp.zone.StandardZoneRules.writeExternal
  *
  *     int default firstDayOfWeek
  *     int default minimalDaysInFirstWeek
@@ -185,6 +187,8 @@ public final class TimeZoneProviderTool {
         final TimeZone timeZone = TimeZone.getTimeZone(zoneId);
         this.generateRawOffset(timeZone);
 
+        this.generateTimeZoneOffset(timeZone);
+
         this.generateGregorianCalendarData(timeZone);
 
         final Map<TimeZoneDisplay, Set<Locale>> displayToLocales = populateDisplayToLocales(zoneId);
@@ -201,6 +205,11 @@ public final class TimeZoneProviderTool {
 
         comments.lineStart();
         comments.print(comments.lineEnding());
+    }
+
+    private void generateTimeZoneOffset(final TimeZone timeZone) throws Exception {
+        ZoneRules.of(timeZone.toZoneId())
+                .writeExternal(this.data);
     }
 
     private void generateDisplayToLocales(final Map<TimeZoneDisplay, Set<Locale>> displayToLocales) throws IOException {
@@ -266,9 +275,6 @@ public final class TimeZoneProviderTool {
 
         final DataOutput data = this.data;
         final IndentingPrinter comments = this.comments;
-
-        TimeZoneOffsetProvider.collect(timeZone)
-                .generate(data, comments);
 
         // find most popular and write that as a default.
         final TimeZoneCalendar most = LocaleAwareAnnotationProcessorTool.findMostPopularLocaleKey(calendarToLocales);
