@@ -184,25 +184,29 @@ public final class TimeZoneProviderTool {
         final IndentingPrinter comments = this.comments;
 
         this.generateTimeZoneId(zoneId);
-        final TimeZone timeZone = TimeZone.getTimeZone(zoneId);
-        this.generateRawOffset(timeZone);
+        comments.indent();
+        {
+            final TimeZone timeZone = TimeZone.getTimeZone(zoneId);
+            this.generateRawOffset(timeZone);
 
-        this.generateTimeZoneOffset(timeZone);
+            this.generateTimeZoneOffset(timeZone);
 
-        this.generateGregorianCalendarData(timeZone);
+            this.generateGregorianCalendarData(timeZone);
 
-        final Map<TimeZoneDisplay, Set<Locale>> displayToLocales = populateDisplayToLocales(zoneId);
+            final Map<TimeZoneDisplay, Set<Locale>> displayToLocales = populateDisplayToLocales(zoneId);
 
-        final TimeZoneDisplay mostDisplay = LocaleAwareAnnotationProcessorTool.findMostPopularLocaleKey(displayToLocales);
+            final TimeZoneDisplay mostDisplay = LocaleAwareAnnotationProcessorTool.findMostPopularLocaleKey(displayToLocales);
 
-        this.generateCommentLocalesToDisplay(displayToLocales);
+            this.generateCommentLocalesToDisplay(displayToLocales);
 
-        // the display with the most locales will be removed.
-        displayToLocales.remove(mostDisplay);
+            // the display with the most locales will be removed.
+            displayToLocales.remove(mostDisplay);
 
-        generateDisplay(mostDisplay, "default ");
-        this.generateDisplayToLocales(displayToLocales);
+            generateDisplay(mostDisplay, "default ");
+            this.generateDisplayToLocales(displayToLocales);
+        }
 
+        comments.outdent();
         comments.lineStart();
         comments.print(comments.lineEnding());
     }

@@ -22,12 +22,15 @@ import walkingkooka.collect.set.Sets;
 import walkingkooka.j2cl.java.io.string.StringDataInputDataOutput;
 import walkingkooka.j2cl.locale.TimeZoneDisplay;
 import walkingkooka.j2cl.locale.WalkingkookaLanguageTag;
+import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessor;
 import walkingkooka.j2cl.locale.org.threeten.bp.zone.StandardZoneRules;
 import walkingkooka.j2cl.locale.org.threeten.bp.zone.ZoneRules;
 import walkingkooka.reflect.ClassTesting;
 import walkingkooka.reflect.JavaVisibility;
 import walkingkooka.text.CharSequences;
 import walkingkooka.text.Indentation;
+import walkingkooka.text.LineEnding;
+import walkingkooka.text.printer.Printer;
 import walkingkooka.text.printer.Printers;
 
 import java.io.DataInput;
@@ -45,6 +48,73 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProviderTool> {
+
+    @Test
+    public void testENAUAustralia() throws Exception {
+        this.generateAndCheck("EN-AU",
+                "Australia/*",
+                "// Timezone ids: 1, locales: 1\n" +
+                        "// Australia/*\n" +
+                        "//   rawOffset: 0\n" +
+                        "//   default firstDayOfWeek: 1\n" +
+                        "//   default minimalDaysInFirstWeek: 1\n" +
+                        "//   en-AU=\"GMT\" \"GMT\" \"Greenwich Mean Time\" \"Greenwich Mean Time\"\n" +
+                        "//   default shortDisplayName: GMT\n" +
+                        "//   default shortDisplayNameDaylight: GMT\n" +
+                        "//   default longDisplayName: Greenwich Mean Time\n" +
+                        "//   default longDisplayNameDaylight Greenwich Mean Time\n" +
+                        "// \n" +
+                        "\n" +
+                        "\n" +
+                        "1,Australia/*,0,0,0,0,0,0,1,1,0,GMT,GMT,Greenwich Mean Time,Greenwich Mean Time,0");
+    }
+
+    @Test
+    public void testENAUENNZAustralia() throws Exception {
+        this.generateAndCheck("EN-AU,EN-NZ",
+                "Australia/*",
+                "// Timezone ids: 1, locales: 2\n" +
+                        "// Australia/*\n" +
+                        "//   rawOffset: 0\n" +
+                        "//   default firstDayOfWeek: 1\n" +
+                        "//   default minimalDaysInFirstWeek: 1\n" +
+                        "//   en-AU, en-NZ=\"GMT\" \"GMT\" \"Greenwich Mean Time\" \"Greenwich Mean Time\"\n" +
+                        "//   default shortDisplayName: GMT\n" +
+                        "//   default shortDisplayNameDaylight: GMT\n" +
+                        "//   default longDisplayName: Greenwich Mean Time\n" +
+                        "//   default longDisplayNameDaylight Greenwich Mean Time\n" +
+                        "// \n" +
+                        "\n" +
+                        "\n" +
+                        "1,Australia/*,0,0,0,0,0,0,1,1,0,GMT,GMT,Greenwich Mean Time,Greenwich Mean Time,0");
+    }
+
+    private void generateAndCheck(final String filter,
+                                  final String timeZoneIds,
+                                  final String expected) throws Exception {
+        assertEquals(expected,
+                generate(filter, timeZoneIds),
+                () -> "filter=" + CharSequences.quoteAndEscape(filter) + " timeZoneIds=" + CharSequences.quoteAndEscape(timeZoneIds));
+    }
+
+    private String generate(final String filter,
+                            final String timeZoneIds) throws Exception {
+        final StringBuilder comments = new StringBuilder();
+        final StringBuilder data = new StringBuilder();
+        final LineEnding eol = LineEnding.NL;
+
+        try (final Printer printer = Printers.stringBuilder(comments, eol)) {
+            TimeZoneProviderTool.generate(filter.isEmpty() ? Sets.empty() : WalkingkookaLanguageTag.locales(filter),
+                    timeZoneIds.isEmpty() ? Sets.empty() : Sets.of(timeZoneIds),
+                    StringDataInputDataOutput.output(data::append),
+                    LocaleAwareAnnotationProcessor.comments(printer));
+            printer.print(eol);
+            printer.flush();
+            printer.close();
+
+            return "" + comments + eol + data;
+        }
+    }
 
     @Test
     public void testGenerateReadAndVerifyLocaleENAUTimeZoneIdAustralia() throws Exception {
