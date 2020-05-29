@@ -15,7 +15,7 @@
  *
  */
 
-package walkingkooka.j2cl.java.util.timezone;
+package walkingkooka.j2cl.java.util.timezone.support;
 
 public final class TimeZoneProvider {
 
