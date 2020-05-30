@@ -38,14 +38,25 @@ public final class TimeZoneProviderAnnotationProcessor extends LocaleAwareAnnota
     private final static String ZONEIDS_ANNOTATION_PROCESSOR_OPTION = "walkingkooka.j2cl.java.util.TimeZone";
 
     @Override
-    protected void generate(final Set<String> languageTags,
-                            final Function<String, String> arguments,
-                            final DataOutput data,
-                            final IndentingPrinter comments) throws Exception {
+    protected String generate(final String filter,
+                              final Set<String> languageTags,
+                              final Function<String, String> arguments,
+                              final DataOutput data,
+                              final IndentingPrinter comments) throws Exception {
+        final String timeZoneFilter = arguments.apply(ZONEIDS_ANNOTATION_PROCESSOR_OPTION);
+        final Set<String> timeZones = TimeZoneProviderTool.timezoneIds(timeZoneFilter);
+
         TimeZoneProviderTool.generate(LocaleAwareAnnotationProcessorTool.toLocales(languageTags),
-                TimeZoneProviderTool.timezoneIds(arguments.apply(ZONEIDS_ANNOTATION_PROCESSOR_OPTION)),
+                timeZones,
                 data,
                 comments);
+
+        return LocaleAwareAnnotationProcessorTool.extractSummary(languageTags.size(),
+                "Locale",
+                filter) + ", " +
+                LocaleAwareAnnotationProcessorTool.extractSummary(timeZones.size(),
+                        "TimeZone",
+                        timeZoneFilter);
     }
 
     @Override
