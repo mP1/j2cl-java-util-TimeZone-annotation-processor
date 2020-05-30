@@ -132,7 +132,6 @@ public final class TimeZoneProviderTool {
                 printer.print(LineEnding.SYSTEM);
             }
 
-            //printer.print(CharSequences.quoteAndEscape(data));
             printer.flush();
         }
     }
