@@ -150,6 +150,12 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.4</version>
+                <configuration>
+                    <excludes>
+                        <!-- cant really code coverage test an annotation processor -->
+                        <exclude>walkingkooka/j2cl/java/util/timezone/annotationprocessor/TimeZoneProviderAnnotationProcessor.*</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
