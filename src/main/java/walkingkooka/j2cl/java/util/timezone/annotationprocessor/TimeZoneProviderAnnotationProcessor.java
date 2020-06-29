@@ -20,6 +20,7 @@ package walkingkooka.j2cl.java.util.timezone.annotationprocessor;
 import walkingkooka.collect.set.Sets;
 import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessor;
 import walkingkooka.j2cl.locale.annotationprocessor.LocaleAwareAnnotationProcessorTool;
+import walkingkooka.text.CharSequences;
 import walkingkooka.text.printer.IndentingPrinter;
 
 import java.io.DataOutput;
@@ -37,6 +38,8 @@ public final class TimeZoneProviderAnnotationProcessor extends LocaleAwareAnnota
      */
     private final static String ZONEIDS_ANNOTATION_PROCESSOR_OPTION = "walkingkooka.j2cl.java.util.TimeZone";
 
+    private final static String URL = "(https://github.com/mP1/j2cl-java-util-TimeZone-annotation-processor)";
+
     @Override
     protected String generate(final String filter,
                               final Set<String> languageTags,
@@ -44,8 +47,16 @@ public final class TimeZoneProviderAnnotationProcessor extends LocaleAwareAnnota
                               final DataOutput data,
                               final IndentingPrinter comments) throws Exception {
         final String timeZoneFilter = arguments.apply(ZONEIDS_ANNOTATION_PROCESSOR_OPTION);
-        final Set<String> timeZones = TimeZoneProviderTool.timezoneIds(timeZoneFilter);
+        if (CharSequences.isNullOrEmpty(timeZoneFilter)) {
+            throw new IllegalArgumentException("TimeZone annotation processor argument " + CharSequences.quoteAndEscape(ZONEIDS_ANNOTATION_PROCESSOR_OPTION) + " missing " + URL);
+        }
 
+        final Set<String> timeZones;
+        try {
+            timeZones = TimeZoneProviderTool.timezoneIds(timeZoneFilter);
+        } catch (final Exception fail) {
+            throw new Exception(fail.getMessage() + " " + URL);
+        }
         TimeZoneProviderTool.generate(LocaleAwareAnnotationProcessorTool.toLocales(languageTags),
                 timeZones,
                 data,
