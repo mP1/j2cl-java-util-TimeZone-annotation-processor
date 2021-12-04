@@ -42,8 +42,6 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.function.Function;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -92,9 +90,11 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
     private void generateAndCheck(final String filter,
                                   final String timeZoneIds,
                                   final String expected) throws Exception {
-        assertEquals(expected,
+        this.checkEquals(
+                expected,
                 generate(filter, timeZoneIds),
-                () -> "filter=" + CharSequences.quoteAndEscape(filter) + " timeZoneIds=" + CharSequences.quoteAndEscape(timeZoneIds));
+                () -> "filter=" + CharSequences.quoteAndEscape(filter) + " timeZoneIds=" + CharSequences.quoteAndEscape(timeZoneIds)
+        );
     }
 
     private String generate(final String filter,
@@ -151,8 +151,8 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
         final Set<Locale> selectedLocales = WalkingkookaLanguageTag.locales(localeFilter);
         final Set<String> timeZoneIds = TimeZoneProviderTool.timezoneIds(timeZoneIdFilter);
 
-        assertNotEquals(0, selectedLocales.size(), "no locales");
-        assertNotEquals(0, timeZoneIds.size(), "no timeZoneIds");
+        this.checkNotEquals(0, selectedLocales.size(), "no locales");
+        this.checkNotEquals(0, timeZoneIds.size(), "no timeZoneIds");
 
         final StringBuilder dataText = new StringBuilder();
 
@@ -163,28 +163,30 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
 
         final DataInput data = StringDataInputDataOutput.input(dataText.toString());
         final int zoneIdCount = data.readInt();
-        assertEquals(timeZoneIds.size(),
+        this.checkEquals(
+                timeZoneIds.size(),
                 zoneIdCount,
                 "timeZone count timeZoneIdFilter: " + CharSequences.quoteAndEscape(timeZoneIdFilter));
 
         for (int i = 0; i < zoneIdCount; i++) {
             final String timeZoneId = data.readUTF();
-            assertNotEquals("", timeZoneId, "timeZoneId");
+            this.checkNotEquals("", timeZoneId, "timeZoneId");
 
             final TimeZone timeZone = TimeZone.getTimeZone(timeZoneId);
-            assertNotEquals("",
+            this.checkNotEquals("",
                     timeZone,
                     () -> "timezoneId " + CharSequences.quoteAndEscape(timeZoneId) + " data: " + data.toString().substring(0, 50));
 
             // getRawOffset.............................................................................................
             final int rawOffset = data.readInt();
-            assertEquals(timeZone.getRawOffset(),
+            this.checkEquals(
+                    timeZone.getRawOffset(),
                     rawOffset,
                     () -> "rawOffset for timeZoneId " + CharSequences.quoteAndEscape(timeZoneId) + " data: " + data.toString().substring(0, 50));
 
             // ZoneRules................................................................................................
             final ZoneRules zoneRules = StandardZoneRules.readExternal(data);
-            assertNotEquals(null, zoneRules);
+            this.checkNotEquals(null, zoneRules);
 
             // firstDayOfWeek, minimalDaysInFirstWeek -> locales........................................................
             final Set<Locale> localesWithDefault = Sets.ordered();
@@ -213,16 +215,16 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
             // default TimeZoneDisplay..................................................................................
             final TimeZoneDisplay most = TimeZoneDisplay.read(data);
 
-            assertNotEquals("",
+            this.checkNotEquals("",
                     most.shortDisplayName,
                     () -> "shortDisplayName " + CharSequences.quoteAndEscape(most.shortDisplayName));
-            assertNotEquals("",
+            this.checkNotEquals("",
                     most.shortDisplayNameDaylight,
                     () -> "shortDisplayNameDaylight " + CharSequences.quoteAndEscape(most.shortDisplayName));
-            assertNotEquals("",
+            this.checkNotEquals("",
                     most.longDisplayName,
                     () -> "longDisplayName " + CharSequences.quoteAndEscape(most.longDisplayName));
-            assertNotEquals("",
+            this.checkNotEquals("",
                     most.longDisplayNameDaylight,
                     () -> "longDisplayNameDaylight " + CharSequences.quoteAndEscape(most.longDisplayName));
 
@@ -266,10 +268,10 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
                                    final int minimalDaysInFirstWeek,
                                    final TimeZone timeZone,
                                    final Locale locale) {
-        assertEquals(GregorianCalendar.getInstance(timeZone, locale).getFirstDayOfWeek(),
+        this.checkEquals(GregorianCalendar.getInstance(timeZone, locale).getFirstDayOfWeek(),
                 firstDayOfWeek,
                 () -> "firstDayOfWeek for timeZone: " + timeZone.getID() + " locale: " + locale);
-        assertEquals(GregorianCalendar.getInstance(timeZone, locale).getMinimalDaysInFirstWeek(),
+        this.checkEquals(GregorianCalendar.getInstance(timeZone, locale).getMinimalDaysInFirstWeek(),
                 minimalDaysInFirstWeek,
                 () -> "minimalDaysInFirstWeek for timeZone: " + timeZone.getID() + " locale: " + locale);
     }
@@ -290,16 +292,16 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
 
     private Locale checkLocale(final String locale) {
         final Locale localeObject = Locale.forLanguageTag(locale);
-        assertEquals(locale, localeObject.toLanguageTag(), "Bad locale");
+        this.checkEquals(locale, localeObject.toLanguageTag(), "Bad locale");
         return localeObject;
     }
 
-    private static void checkDisplayName(final TimeZone timeZone,
-                                         final boolean daylight,
-                                         final int style,
-                                         final Locale locale,
-                                         final String expected) {
-        assertEquals(expected,
+    private void checkDisplayName(final TimeZone timeZone,
+                                  final boolean daylight,
+                                  final int style,
+                                  final Locale locale,
+                                  final String expected) {
+        this.checkEquals(expected,
                 timeZone.getDisplayName(daylight, style, locale),
                 () -> "TimeZone " + CharSequences.quoteAndEscape(timeZone.getID()) + " daylight=" + daylight + " style=" + (TimeZone.SHORT == style ? "SHORT" : "LONG") + " locale: " + locale);
     }

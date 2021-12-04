@@ -27,7 +27,10 @@ public final class TimeZoneProviderAnnotationProcessorTest implements ClassTesti
 
     @Test
     public void testDefaultPublicConstructor() throws Exception {
-        assertEquals(JavaVisibility.PUBLIC, JavaVisibility.of(TimeZoneProviderAnnotationProcessor.class.getConstructor()));
+        this.checkEquals(
+                JavaVisibility.PUBLIC,
+                JavaVisibility.of(TimeZoneProviderAnnotationProcessor.class.getConstructor())
+        );
     }
 
     @Override
