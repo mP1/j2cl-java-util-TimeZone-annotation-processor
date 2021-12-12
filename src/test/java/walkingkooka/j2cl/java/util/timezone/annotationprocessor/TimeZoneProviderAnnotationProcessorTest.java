@@ -21,8 +21,6 @@ import org.junit.jupiter.api.Test;
 import walkingkooka.reflect.ClassTesting;
 import walkingkooka.reflect.JavaVisibility;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
 public final class TimeZoneProviderAnnotationProcessorTest implements ClassTesting<TimeZoneProviderAnnotationProcessor> {
 
     @Test
