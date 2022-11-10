@@ -159,7 +159,7 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
         TimeZoneProviderTool.generate(selectedLocales,
                 timeZoneIds,
                 StringDataInputDataOutput.output(dataText::append),
-                Printers.sink().indenting(Indentation.with("  ")));
+                Printers.sink().indenting(Indentation.SPACES2));
 
         final DataInput data = StringDataInputDataOutput.input(dataText.toString());
         final int zoneIdCount = data.readInt();
