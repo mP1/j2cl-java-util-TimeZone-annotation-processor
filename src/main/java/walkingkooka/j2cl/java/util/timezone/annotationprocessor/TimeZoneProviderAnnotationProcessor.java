@@ -69,9 +69,4 @@ public final class TimeZoneProviderAnnotationProcessor extends LocaleAwareAnnota
                         "TimeZone",
                         timeZoneFilter);
     }
-
-    @Override
-    protected String generatedClassName() {
-        return "walkingkooka.j2cl.java.util.timezone.generated.TimeZoneProvider";
-    }
 }
