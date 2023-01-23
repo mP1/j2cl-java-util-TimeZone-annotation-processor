@@ -1,5 +1,4 @@
 #
 # Ignore all source, the annotation will still be included on the classpath during java compilation.
 #
-TimeZoneProviderAnnotationProcessor.*
-TimeZoneProviderTool.*
+**/*
