@@ -23,6 +23,8 @@ public final class TimeZoneProvider {
 
   public final static String SELECTED_LOCALES = preventInlining($SELECTED_LOCALES);
 
+  public final static String DEFAULT_TIMEZONE = preventInlining($DEFAULT);
+
 $DATA_COMMENT
 
   public final static String DATA = preventInlining($DATA);
