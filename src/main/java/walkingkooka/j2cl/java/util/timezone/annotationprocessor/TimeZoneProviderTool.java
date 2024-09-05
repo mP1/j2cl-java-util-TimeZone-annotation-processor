@@ -19,6 +19,7 @@ package walkingkooka.j2cl.java.util.timezone.annotationprocessor;
 
 import walkingkooka.collect.map.Maps;
 import walkingkooka.collect.set.Sets;
+import walkingkooka.collect.set.SortedSets;
 import walkingkooka.j2cl.java.io.string.StringDataInputDataOutput;
 import walkingkooka.j2cl.java.util.locale.support.LocaleSupport;
 import walkingkooka.j2cl.java.util.timezone.zonerulesreader.org.threeten.bp.zone.ZoneRules;
@@ -143,7 +144,7 @@ public final class TimeZoneProviderTool {
         final Predicate<String> predicate = WalkingkookaLanguageTag.filter(filter);
         return Arrays.stream(TimeZone.getAvailableIDs())
                 .filter(predicate)
-                .collect(Collectors.toCollection(Sets::sorted));
+                .collect(Collectors.toCollection(SortedSets::tree));
     }
 
     static void generate(final Set<Locale> locales,
