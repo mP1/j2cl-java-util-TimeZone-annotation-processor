@@ -18,7 +18,6 @@
 package walkingkooka.j2cl.java.util.timezone.annotationprocessor;
 
 import walkingkooka.collect.map.Maps;
-import walkingkooka.collect.set.Sets;
 import walkingkooka.collect.set.SortedSets;
 import walkingkooka.j2cl.java.io.string.StringDataInputDataOutput;
 import walkingkooka.j2cl.java.util.locale.support.LocaleSupport;
@@ -64,7 +63,7 @@ import java.util.zip.GZIPOutputStream;
  *     int default minimalDaysInFirstWeek
  *
  *     group for each locales with common
-           int locale count
+ * int locale count
  *         for each locale
  *             String locale language tag
  *         end

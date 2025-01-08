@@ -211,7 +211,7 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
                 }
             }
 
-            for(final Locale locale : localesWithDefault) {
+            for (final Locale locale : localesWithDefault) {
                 this.checkCalendarData(defaultFirstDayOfWeek, defaultMinimalDaysInFirstWeek, timeZone, locale);
             }
 
