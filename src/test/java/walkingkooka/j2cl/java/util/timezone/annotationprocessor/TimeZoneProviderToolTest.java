@@ -69,13 +69,17 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
 
     @Test
     public void testENAUENNZAustralia() throws Exception {
-        this.generateAndCheck("EN-AU,EN-NZ",
+        this.generateAndCheck(
+                "EN-AU,EN-NZ",
                 "Australia/*",
                 "// Timezone ids: 1, locales: 2\n" +
                         "// Australia/*\n" +
                         "//   rawOffset: 0\n" +
                         "//   default firstDayOfWeek: 1\n" +
                         "//   default minimalDaysInFirstWeek: 1\n" +
+                        "//   locales=en-NZ\n" +
+                        "//     firstDayOfWeek: 2\n" +
+                        "//     minimalDaysInFirstWeek: 1\n" +
                         "//   en-AU, en-NZ=\"GMT\" \"GMT\" \"Greenwich Mean Time\" \"Greenwich Mean Time\"\n" +
                         "//   default shortDisplayName: GMT\n" +
                         "//   default shortDisplayNameDaylight: GMT\n" +
@@ -84,7 +88,8 @@ public final class TimeZoneProviderToolTest implements ClassTesting<TimeZoneProv
                         "// \n" +
                         "\n" +
                         "\n" +
-                        "1,Australia/*,0,0,0,0,0,0,1,1,0,GMT,GMT,Greenwich Mean Time,Greenwich Mean Time,0");
+                        "1,Australia/*,0,0,0,0,0,0,1,1,1,1,en-NZ,2,1,GMT,GMT,Greenwich Mean Time,Greenwich Mean Time,0"
+        );
     }
 
     private void generateAndCheck(final String filter,
